@@ -1,0 +1,156 @@
+/home/pi/camera_ai_traffic/
+├── build/                          # Thư mục build artifacts (tự động tạo)
+├── install/                        # Thư mục cài đặt (tự động tạo)
+├── log/                           # Log files (tự động tạo)
+└── src/                           # Source code packages
+    ├── MainProcess/               # Package chính - điều phối và giám sát
+    │   ├── config/
+    │   │   ├── params.yaml        # Tham số cấu hình hệ thống
+    │   │   ├── camera_calibration.yaml
+    │   │   ├── uart_config.yaml
+    │   │   └── traffic_logic.yaml # Logic xử lý đèn giao thông
+    │   ├── launch/
+    │   │   ├── main_system.launch.py      # Launch toàn bộ hệ thống
+    │   │   ├── camera_pipeline.launch.py   # Launch camera + AI
+    │   │   ├── communication.launch.py     # Launch UART + Network
+    │   │   └── debug.launch.py            # Launch chế độ debug
+    │   ├── include/MainProcess/
+    │   │   ├── main_node.hpp
+    │   │   ├── system_monitor.hpp
+    │   │   └── safety_manager.hpp
+    │   ├── src/
+    │   │   └── main_node/
+    │   │       └── cpp/
+    │   │           ├── main_node.cpp      # Node điều phối chính
+    │   │           ├── system_monitor.cpp
+    │   │           └── safety_manager.cpp
+    │   ├── CMakeLists.txt
+    │   └── package.xml
+    │
+    ├── camera_interface/          # Package giao tiếp camera
+    │   ├── config/
+    │   │   ├── camera_params.yaml
+    │   │   └── rtsp_config.yaml   # Cấu hình RTSP/Ethernet
+    │   ├── launch/
+    │   │   └── camera_node.launch.py
+    │   ├── include/camera_interface/
+    │   │   ├── camera_node.hpp
+    │   │   ├── rtsp_handler.hpp
+    │   │   └── frame_buffer.hpp
+    │   ├── src/
+    │   │   ├── camera_node.cpp
+    │   │   ├── rtsp_handler.cpp
+    │   │   └── frame_buffer.cpp
+    │   ├── CMakeLists.txt
+    │   └── package.xml
+    │
+    ├── ai_detection/              # Package AI detection và tracking
+    │   ├── config/
+    │   │   ├── mobilenet_ssd_config.yaml
+    │   │   ├── class_labels.yaml
+    │   │   └── tracking_params.yaml
+    │   ├── models/                # Model weights
+    │   │   ├── MobileNetSSD_deploy.caffemodel
+    │   │   ├── MobileNetSSD_deploy.prototxt
+    │   │   └── deploy_config.txt
+    │   ├── launch/
+    │   │   ├── detector.launch.py
+    │   │   └── tracker.launch.py
+    │   ├── include/ai_detection/
+    │   │   ├── object_detector.hpp
+    │   │   ├── vehicle_tracker.hpp    # SORT/DeepSORT tracker
+    │   │   ├── violation_detector.hpp
+    │   │   └── density_analyzer.hpp
+    │   ├── src/
+    │   │   ├── object_detector.cpp    # MobileNetSSD detector
+    │   │   ├── vehicle_tracker.cpp    # Multi-object tracking
+    │   │   ├── violation_detector.cpp # Vi phạm giao thông
+    │   │   └── density_analyzer.cpp   # Đếm và phân tích mật độ
+    │   ├── scripts/
+    │   │   ├── train_model.py        # Scripts training (nếu cần)
+    │   │   └── test_detection.py
+    │   ├── CMakeLists.txt
+    │   └── package.xml
+    │
+    ├── traffic_controller/        # Package xử lý logic đèn giao thông
+    │   ├── config/
+    │   │   ├── traffic_rules.yaml
+    │   │   ├── timing_params.yaml
+    │   │   └── density_thresholds.yaml
+    │   ├── launch/
+    │   │   └── controller.launch.py
+    │   ├── include/traffic_controller/
+    │   │   ├── traffic_decision.hpp
+    │   │   ├── signal_generator.hpp
+    │   │   └── violation_logger.hpp
+    │   ├── src/
+    │   │   ├── traffic_decision.cpp   # Logic quyết định đèn
+    │   │   ├── signal_generator.cpp   # Tạo tín hiệu điều khiển
+    │   │   └── violation_logger.cpp   # Log vi phạm
+    │   ├── CMakeLists.txt
+    │   └── package.xml
+    │
+    ├── uart_communication/        # Package giao tiếp UART với ESP32
+    │   ├── config/
+    │   │   ├── serial_config.yaml
+    │   │   └── esp32_protocol.yaml
+    │   ├── launch/
+    │   │   └── uart_node.launch.py
+    │   ├── include/uart_communication/
+    │   │   ├── uart_node.hpp
+    │   │   ├── serial_handler.hpp
+    │   │   └── protocol_parser.hpp
+    │   ├── src/
+    │   │   ├── uart_node.cpp
+    │   │   ├── serial_handler.cpp
+    │   │   └── protocol_parser.cpp
+    │   ├── CMakeLists.txt
+    │   └── package.xml
+    │
+    ├── custom_msgs/               # Package định nghĩa message types
+    │   ├── msg/
+    │   │   ├── VehicleInfo.msg
+    │   │   ├── TrafficDensity.msg
+    │   │   ├── TrafficSignal.msg
+    │   │   ├── ViolationEvent.msg
+    │   │   ├── DetectionResult.msg
+    │   │   └── SystemStatus.msg
+    │   ├── srv/
+    │   │   ├── SetTrafficMode.srv
+    │   │   ├── GetDensity.srv
+    │   │   └── ResetCounter.srv
+    │   ├── action/
+    │   │   └── TrackVehicle.action
+    │   ├── CMakeLists.txt
+    │   └── package.xml
+    │
+    ├── visualization/             # Package visualization và monitoring
+    │   ├── config/
+    │   │   └── rviz_config.rviz
+    │   ├── launch/
+    │   │   └── visualization.launch.py
+    │   ├── scripts/
+    │   │   ├── web_dashboard.py       # Web interface
+    │   │   └── data_plotter.py
+    │   ├── src/
+    │   │   └── viz_node.cpp
+    │   ├── CMakeLists.txt
+    │   └── package.xml
+    │
+    └── utilities/                 # Package tiện ích và tools
+        ├── config/
+        │   └── logging.yaml
+        ├── include/utilities/
+        │   ├── logger.hpp
+        │   ├── time_sync.hpp
+        │   └── data_recorder.hpp
+        ├── src/
+        │   ├── logger.cpp
+        │   ├── time_sync.cpp
+        │   └── data_recorder.cpp
+        ├── scripts/
+        │   ├── calibrate_camera.py
+        │   ├── test_uart.py
+        │   └── performance_monitor.py
+        ├── CMakeLists.txt
+        └── package.xml
